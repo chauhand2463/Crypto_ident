@@ -6,7 +6,7 @@ A production-grade ZK-Identity framework for privacy-preserving age-gating and n
 ---
 
 ## 🏛️ Project Vision
-Extreme Emerald solves the "Privacy Paradox" in digital verification. It allows users to prove they are over 18, have a specific nationality, or are students WITHOUT revealing their birth date, passport number, or university ID to the verifying application.
+Crypto.Indent solves the "Privacy Paradox" in digital verification. It allows users to prove they are over 18, have a specific nationality, or are students WITHOUT revealing their birth date, passport number, or university ID to the verifying application.
 
 ---
 
