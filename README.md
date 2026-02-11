@@ -1,4 +1,4 @@
-   # � EXTREME EMERALD: Zero-Knowledge Identity Protocol
+   # � Crypto.Indent : Zero-Knowledge Identity Protocol
 
 **Secure. Private. Irrevocable.**  
 A production-grade ZK-Identity framework for privacy-preserving age-gating and nationality verification on the Polygon blockchain.
