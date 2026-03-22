@@ -85,4 +85,4 @@ The smart contracts are deployed and verified on **Polygon Amoy**.
 
 ---
 
-**Built with <3 for the Hackathon Judges.** 🚀💎🦾🛡️
+**Built By Dhairy Chauhan.** 🚀💎🦾🛡️
