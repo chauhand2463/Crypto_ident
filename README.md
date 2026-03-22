@@ -72,17 +72,4 @@ The smart contracts are deployed and verified on **Polygon Amoy**.
 5. **Security Check**:
    Once inside, the dashboard will automatically prompt you to switch to the correct "Hardhat Local" or "Polygon Amoy" network to ensure zero-data corruption.
 
----
-
-## 👨‍💻 Submission Checklist
-- [x] Contracts Verified on Polygonscan (Amoy)
-- [x] Video Demo showcasing ZK proof generation
-- [x] Documentation of on-chain revocation system
-- [x] No Mock Data verification audit passed
-- [x] Mobile-responsive Proving HUD V2 implemented
-- [x] Administrative Identity Revocation Dashboard
-- [x] Local Identity Vault with AES-256 encryption
-
----
-
 **Built By Dhairy Chauhan.** 🚀💎🦾🛡️
