@@ -7,7 +7,7 @@ import { TrendingUp, Wallet, ArrowRightLeft, ShieldCheck, Zap, Lock, AlertTriang
  * Age-Gated Trading Terminal.
  * NO MOCK DATA. REQUIRES ON-CHAIN ZK PROOF.
  */
-const CurrencyExchange = ({ address, identity, identityState, chainIdentity }) => {
+const CurrencyExchange = ({ address, identity, identityState, chainIdentity, ecBalance, onUpdateBalance }) => {
     const [amount, setAmount] = useState('');
     const [isBuying, setIsBuying] = useState(false);
     const [price, setPrice] = useState(1.24);
@@ -28,8 +28,10 @@ const CurrencyExchange = ({ address, identity, identityState, chainIdentity }) =
         setIsBuying(true);
         // Simulate blockchain transaction delay
         setTimeout(() => {
+            const purchasedEC = parseFloat(amount) / price;
+            onUpdateBalance(ecBalance + purchasedEC);
             setIsBuying(false);
-            alert(`SUCCESS: Purchased ${amount} EC (Emerald Credits) @ $${price}`);
+            alert(`SUCCESS: Purchased ${purchasedEC.toFixed(2)} EC (Emerald Credits) @ $${price}`);
             setAmount('');
         }, 2000);
     };
@@ -57,9 +59,15 @@ const CurrencyExchange = ({ address, identity, identityState, chainIdentity }) =
                         <h2 className="view-header">CURRENCY_TERMINAL</h2>
                         <p className="view-subtitle">DECENTRALIZED_ASSET_EXCHANGE_v3.0</p>
                     </div>
-                    <div className="glass-card" style={{ padding: 'calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 3)', display: 'flex', alignItems: 'center', gap: 'var(--space-unit)' }}>
-                        <TrendingUp size={16} color="var(--accent-primary)" />
-                        <span className="mono" style={{ fontSize: '0.85rem' }}>EC/USD: ${price}</span>
+                    <div className="glass-card" style={{ padding: 'calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 3)', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.2rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-unit)' }}>
+                            <TrendingUp size={16} color="var(--accent-primary)" />
+                            <span className="mono" style={{ fontSize: '0.85rem' }}>EC/USD: ${price}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-unit)', opacity: 0.8 }}>
+                            <Wallet size={14} color="var(--accent-secondary)" />
+                            <span className="mono" style={{ fontSize: '0.75rem' }}>BALANCE: {ecBalance.toFixed(2)} EC</span>
+                        </div>
                     </div>
                 </div>
             </header>

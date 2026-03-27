@@ -1,10 +1,5 @@
+import * as snarkjs from 'snarkjs';
 import { getRegistryContract } from './identity.service';
-
-/**
- * Proof Service
- * Centralized logic for ZK proof generation and submission to Ethereum.
- * Uses Web Workers for background proving (Phase 3).
- */
 
 const formatCalldata = (proof, publicSignals) => {
     return {
@@ -42,43 +37,40 @@ export const proveOnChain = async (type, inputs) => {
     const wasmPath = `/circuits/${circuitName}/${circuitName}.wasm`;
     const zkeyPath = `/circuits/${circuitName}/${circuitName}.zkey`;
 
-    // 1. Generate Proof via Web Worker
-    const { proof, publicSignals } = await new Promise((resolve, reject) => {
-        const worker = new Worker(new URL('../workers/zkProver.worker.js', import.meta.url));
+    try {
+        console.log(`[PROOF] Generating ${type} proof...`);
+        console.log(`[PROOF] Inputs:`, JSON.stringify(inputs, null, 2));
 
-        worker.onmessage = (e) => {
-            if (e.data.success) {
-                resolve({ proof: e.data.proof, publicSignals: e.data.publicSignals });
-            } else {
-                reject(new Error(e.data.error));
-            }
-            worker.terminate();
-        };
-
-        worker.onerror = (err) => {
-            reject(err);
-            worker.terminate();
-        };
-
-        worker.postMessage({
-            type,
+        // Generate proof
+        const { proof, publicSignals } = await snarkjs.groth16.fullProve(
             inputs,
             wasmPath,
             zkeyPath
-        });
-    });
+        );
 
-    // 2. Submit Transaction
-    const registry = await getRegistryContract(false);
-    const callData = formatCalldata(proof, publicSignals);
+        console.log(`[PROOF] Generated successfully`);
+        console.log(`[PROOF] Public signals:`, publicSignals);
 
-    const tx = await registry[methodName](
-        callData.a,
-        callData.b,
-        callData.c,
-        callData.input
-    );
-    await tx.wait();
+        // Submit to blockchain (this costs gas)
+        console.log(`[PROOF] Submitting to blockchain...`);
+        const registry = await getRegistryContract(false);
+        const callData = formatCalldata(proof, publicSignals);
 
-    return tx.hash;
+        const tx = await registry[methodName](
+            callData.a,
+            callData.b,
+            callData.c,
+            callData.input
+        );
+
+        console.log(`[PROOF] Transaction submitted:`, tx.hash);
+        
+        await tx.wait();
+        
+        console.log(`[PROOF] Confirmed:`, tx.hash);
+        return tx.hash;
+    } catch (error) {
+        console.error(`[PROOF] Error:`, error);
+        throw error;
+    }
 };

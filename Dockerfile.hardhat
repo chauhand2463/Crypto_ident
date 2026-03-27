@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy contracts and scripts
+COPY contracts ./contracts
+COPY scripts ./scripts
+COPY hardhat.config.js ./
+COPY .env.example .env
+
+# Expose ports
+EXPOSE 8545 8546
+
+# Start hardhat node
+CMD ["npm", "run", "chain"]

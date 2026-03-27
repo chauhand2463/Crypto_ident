@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Lock, Unlock, ShieldCheck, Wallet } from 'lucide-react';
+import { Unlock, ShieldCheck, Wallet, AlertTriangle, RefreshCw } from 'lucide-react';
 
 const AuthPage = ({
     isConnected,
@@ -10,6 +10,11 @@ const AuthPage = ({
     hasStoredIdentity,
     onEnterDashboard
 }) => {
+    const handleCreateNew = () => {
+        localStorage.removeItem('zk_identity_profile');
+        onEnterDashboard();
+    };
+
     return (
         <div className="auth-container">
             {/* Visual background noise/glow from landing style */}
@@ -29,19 +34,19 @@ const AuthPage = ({
             >
                 <div className="auth-header">
                     <h1 className="auth-logo">SECURITY_GATE</h1>
-                    <div className="auth-subtitle">IDENT_VERIFICATION_REQUIRED</div>
+                    <div className="auth-subtitle">IDENTITY_VERIFICATION</div>
                 </div>
 
                 <div className="auth-status-box">
                     <div className="flex-between mono" style={{ fontSize: '0.7rem' }}>
                         <span style={{ color: 'var(--text-dim)' }}>NETWORK_STATUS:</span>
-                        <span style={{ color: isConnected ? 'var(--accent-primary)' : '#ff4444' }}>
-                            {isConnected ? 'STABLE_CONNECTION' : 'WAITING_FOR_LINK'}
+                        <span style={{ color: isConnected ? 'var(--accent-mint)' : '#ff4444' }}>
+                            {isConnected ? 'CONNECTED' : 'DISCONNECTED'}
                         </span>
                     </div>
                     {isConnected && (
                         <div className="mono" style={{ fontSize: '0.65rem', marginTop: '0.5rem', opacity: 0.6 }}>
-                            NODE_ID: {address}
+                            WALLET: {address?.slice(0, 6)}...{address?.slice(-4)}
                         </div>
                     )}
                 </div>
@@ -49,14 +54,14 @@ const AuthPage = ({
                 {!isConnected ? (
                     <div style={{ textAlign: 'center' }}>
                         <p style={{ color: 'var(--text-dim)', fontSize: '0.85rem', marginBottom: '2rem', lineHeight: '1.6' }}>
-                            Accessing the ZK-Identity Ledger requires an active peer-to-peer connection via your browser wallet.
+                            Connect your wallet to access the ZK-Identity dashboard and manage your identity credentials.
                         </p>
                         <button
                             className="btn-primary"
                             onClick={onConnect}
                             style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}
                         >
-                            <Wallet size={18} /> INITIATE_CONNECTION
+                            <Wallet size={18} /> CONNECT_WALLET
                         </button>
                     </div>
                 ) : (
@@ -64,7 +69,7 @@ const AuthPage = ({
                         {hasStoredIdentity ? (
                             <>
                                 <p style={{ color: 'var(--text-dim)', fontSize: '0.85rem', marginBottom: '2rem', lineHeight: '1.6' }}>
-                                    ENCRYPTED_VAULT_DETECTED. Decrypt your session-locked identity to authorize access to the dashboard.
+                                    Your encrypted identity vault was found. Sign to decrypt and access your credentials.
                                 </p>
                                 <button
                                     className="btn-primary"
@@ -76,22 +81,35 @@ const AuthPage = ({
                                         <>DECRYPTING...</>
                                     ) : (
                                         <>
-                                            <Unlock size={18} /> AUTHORIZE_SESSION
+                                            <Unlock size={18} /> UNLOCK_VAULT
                                         </>
                                     )}
                                 </button>
+                                
+                                <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-dim)' }}>
+                                    <p style={{ color: 'var(--text-dim)', fontSize: '0.75rem', marginBottom: '1rem' }}>
+                                        Using a different wallet or vault corrupted?
+                                    </p>
+                                    <button
+                                        className="btn-secondary"
+                                        onClick={handleCreateNew}
+                                        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontSize: '0.7rem' }}
+                                    >
+                                        <RefreshCw size={14} /> CREATE NEW IDENTITY
+                                    </button>
+                                </div>
                             </>
                         ) : (
                             <>
                                 <p style={{ color: 'var(--text-dim)', fontSize: '0.85rem', marginBottom: '2rem', lineHeight: '1.6' }}>
-                                    No identity found for this node. You must register a new cryptographic commitment to enter the system.
+                                    No identity vault found. Create a new identity to get started with ZK verification.
                                 </p>
                                 <button
                                     className="btn-primary"
                                     onClick={onEnterDashboard}
                                     style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}
                                 >
-                                    <ShieldCheck size={18} /> INITIALIZE_NEW_IDENTITY
+                                    <ShieldCheck size={18} /> CREATE_IDENTITY
                                 </button>
                             </>
                         )}

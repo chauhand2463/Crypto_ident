@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { LayoutDashboard, LogOut, ArrowRightLeft, Binary, BarChart3, ShieldAlert } from 'lucide-react';
+import { LayoutDashboard, LogOut, ArrowRightLeft, Binary, BarChart3, ShieldAlert, HelpCircle } from 'lucide-react';
 
 const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
     const menuItems = [
@@ -7,6 +7,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
         { id: 'prover', label: 'Proving System', icon: <Binary size={18} /> },
         { id: 'exchange', label: 'Emerald Exchange', icon: <ArrowRightLeft size={18} /> },
         { id: 'analytics', label: 'Security Hub', icon: <BarChart3 size={18} /> },
+        { id: 'diagnostics', label: 'Diagnostics', icon: <HelpCircle size={18} /> },
         { id: 'admin', label: 'Admin Portal', icon: <ShieldAlert size={18} /> }
     ];
 

@@ -19,6 +19,7 @@ import AnalyticsBars from './components/AnalyticsBars';
 import CurrencyExchange from './components/CurrencyExchange';
 import AdminPortal from './components/AdminPortal';
 import AuthPage from './components/AuthPage';
+import DiagnosticsGuide from './components/DiagnosticsGuide';
 
 // Abstraction Layers (Phase 3 & 4)
 import { useWallet } from './hooks/useWallet';
@@ -41,6 +42,7 @@ function App() {
     // UI Loading states
     const [isRegistering, setIsRegistering] = useState(false);
     const [isUnlocking, setIsUnlocking] = useState(false);
+    const [ecBalance, setEcBalance] = useState(0);
 
     // Phase 8: Hard fail on Mock Data (Production Guard)
     useEffect(() => {
@@ -118,6 +120,11 @@ function App() {
         setView('dashboard');
     };
 
+    const handleGoToRegistry = () => {
+        setActiveTab('registry');
+        setView('dashboard');
+    };
+
     const handleRegisterOnChain = async () => {
         if (!address || !localIdentity) return;
         setIsRegistering(true);
@@ -164,7 +171,7 @@ function App() {
                         onUnlock={handleUnlock}
                         isUnlocking={isUnlocking}
                         hasStoredIdentity={hasStoredIdentity()}
-                        onEnterDashboard={() => setView('dashboard')}
+                        onEnterDashboard={handleGoToRegistry}
                     />
                 </motion.div>
             ) : (
@@ -240,6 +247,29 @@ function App() {
                                                 </div>
                                             ) : (
                                                 <div className="glass-card" style={{ border: identityState === 'revoked' ? '1px solid var(--accent-red)' : '' }}>
+                                                    {chainIdentity && !chainIdentity.age && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, scale: 0.95 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            style={{
+                                                                background: 'rgba(168, 85, 247, 0.1)',
+                                                                border: '1px solid var(--accent-secondary)',
+                                                                padding: '1rem',
+                                                                marginBottom: '1.5rem',
+                                                                borderRadius: '8px',
+                                                                textAlign: 'center'
+                                                            }}
+                                                        >
+                                                            <p className="mono" style={{ fontSize: '0.7rem', color: 'var(--accent-secondary)', marginBottom: '0.5rem' }}>ACTION_REQUIRED: MISSING_AGE_PROOF</p>
+                                                            <button
+                                                                className="btn-primary"
+                                                                onClick={() => setActiveTab('prover')}
+                                                                style={{ fontSize: '0.65rem', padding: '0.4rem 1rem' }}
+                                                            >
+                                                                FULFILL_AGE_REQUIREMENT
+                                                            </button>
+                                                        </motion.div>
+                                                    )}
                                                     <div className="profile-card">
                                                         <h2 className="mono" style={{
                                                             fontSize: '1rem',
@@ -357,15 +387,27 @@ function App() {
                                 )}
 
                                 {activeTab === 'prover' && (
-                                    <div className="glass-card" style={{ height: '100%' }}>
-                                        <h2 className="view-header">ATOMIC_PROVING_ENGINE</h2>
-                                        <p className="view-subtitle">ZK_SNARK_GENERATION_SUBSYSTEM</p>
+                                    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                                         {!isConnected ? (
-                                            <div style={{ padding: '4rem 2rem', textAlign: 'center' }}>
+                                            <div className="glass-card" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
                                                 <p style={{ color: 'var(--text-dim)', marginBottom: '1rem' }}>CONNECT WALLET TO ACCESS THE PROOF ENGINE</p>
                                             </div>
+                                        ) : !localIdentity ? (
+                                            <div className="glass-card" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+                                                <p style={{ color: 'var(--text-dim)', marginBottom: '1rem' }}>PLEASE CREATE OR UNLOCK YOUR IDENTITY VAULT FIRST</p>
+                                                <button className="btn-primary" onClick={() => setActiveTab('registry')} style={{ margin: '0 auto' }}>
+                                                    GO TO REGISTRY
+                                                </button>
+                                            </div>
                                         ) : (
-                                            <ProofInterface identity={localIdentity} address={address} encryptionKey={encryptionKey} />
+                                            <div style={{ flex: 1 }}>
+                                                <ProofInterface
+                                                    identity={localIdentity}
+                                                    address={address}
+                                                    encryptionKey={encryptionKey}
+                                                    chainStatus={chainIdentity}
+                                                />
+                                            </div>
                                         )}
                                     </div>
                                 )}
@@ -385,11 +427,19 @@ function App() {
                                             address={address}
                                             identityState={identityState}
                                             chainIdentity={chainIdentity}
+                                            ecBalance={ecBalance}
+                                            onUpdateBalance={(newBalance) => setEcBalance(newBalance)}
                                         />
                                     </div>
                                 )}
+                                {activeTab === 'diagnostics' && (
+                                    <DiagnosticsGuide />
+                                )}
                                 {activeTab === 'admin' && (
-                                    <AdminPortal address={address} />
+                                    <AdminPortal
+                                        address={address}
+                                        isConnected={isConnected}
+                                    />
                                 )}
                             </motion.div>
                         </AnimatePresence>

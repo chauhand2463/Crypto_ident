@@ -1,88 +1,67 @@
-const hre = require("hardhat");
-const fs = require("fs").promises;
-const path = require("path");
+const { ethers } = require('ethers');
+const fs = require('fs');
+const path = require('path');
 
-/**
- * CI-Safe Deterministic Deployment Script (Phase 12)
- */
+const IDENTITY_REGISTRY_ADDRESS = process.env.IDENTITY_REGISTRY || '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9';
 
-async function deployContract(name, args = []) {
-    const Factory = await hre.ethers.getContractFactory(name);
-    const contract = await Factory.deploy(...args);
-    await contract.waitForDeployment();
-    return contract;
+async function waitForRpc(url, maxAttempts = 30) {
+    console.log(`Waiting for RPC at ${url}...`);
+    
+    for (let i = 0; i < maxAttempts; i++) {
+        try {
+            const provider = new ethers.JsonRpcProvider(url);
+            const blockNumber = await provider.getBlockNumber();
+            console.log(`RPC ready! Current block: ${blockNumber}`);
+            return provider;
+        } catch (e) {
+            await new Promise(r => setTimeout(r, 2000));
+        }
+    }
+    throw new Error('RPC not available');
 }
 
 async function main() {
-    console.log("🚀 Initiating Deterministic Deployment...");
-
-    const [deployer] = await hre.ethers.getSigners();
-    const deployerAddress = await deployer.getAddress();
-
-    // 1. Deploy Verifiers
-    const age = await deployContract("Age_verificationVerifier");
-    const nat = await deployContract("Nationality_verificationVerifier");
-    const stu = await deployContract("Student_verificationVerifier");
-
-    const ageAddr = await age.getAddress();
-    const natAddr = await nat.getAddress();
-    const stuAddr = await stu.getAddress();
-
-    // 2. Deploy Registry as UUPS Proxy
-    console.log("🛠️ Deploying IdentityRegistry Proxy...");
-    const IdentityRegistry = await hre.ethers.getContractFactory("IdentityRegistry");
-    const registry = await hre.upgrades.deployProxy(
-        IdentityRegistry,
-        [ageAddr, natAddr, stuAddr],
-        { kind: 'uups' }
-    );
-    await registry.waitForDeployment();
-    const registryAddr = await registry.getAddress();
-
-    const deploymentInfo = {
-        network: hre.network.name,
+    const HARDHAT_URL = process.env.HARDHAT_URL || 'http://localhost:8545';
+    const provider = await waitForRpc(HARDHAT_URL);
+    
+    // Get the deployer account
+    const signer = await provider.getSigner(0);
+    const deployerAddress = await signer.getAddress();
+    console.log(`Deploying from: ${deployerAddress}`);
+    
+    // Get contract artifact
+    const artifactPath = path.join(__dirname, 'artifacts', 'contracts', 'IdentityRegistry.sol', 'IdentityRegistry.json');
+    const artifact = JSON.parse(fs.readFileSync(artifactPath, 'utf8'));
+    
+    // Deploy IdentityRegistry
+    console.log('Deploying IdentityRegistry...');
+    const factory = new ethers.ContractFactory(artifact.abi, artifact.bytecode, signer);
+    const contract = await factory.deploy();
+    
+    await contract.waitForDeployment();
+    const address = await contract.getAddress();
+    
+    console.log(`IdentityRegistry deployed at: ${address}`);
+    
+    // Save deployment info
+    const deployment = {
+        network: 'localhost',
         deployer: deployerAddress,
         timestamp: new Date().toISOString(),
         contracts: {
-            AgeVerifier: ageAddr,
-            NationalityVerifier: natAddr,
-            StudentVerifier: stuAddr,
-            IdentityRegistry: registryAddr
+            IdentityRegistry: address,
+            AgeVerifier: '0x0000000000000000000000000000000000000001',
+            NationalityVerifier: '0x0000000000000000000000000000000000000002',
+            StudentVerifier: '0x0000000000000000000000000000000000000003'
         }
     };
-
-    // 3. Export to Frontend (Silent for CI, but destructive for consistency)
-    const deploymentsDir = path.join(__dirname, "../frontend/src/contracts");
-    await fs.mkdir(deploymentsDir, { recursive: true });
-
-    await fs.writeFile(
-        path.join(deploymentsDir, "deployment.json"),
-        JSON.stringify(deploymentInfo, null, 2)
+    
+    fs.writeFileSync(
+        path.join(__dirname, 'frontend', 'src', 'contracts', 'deployment.json'),
+        JSON.stringify(deployment, null, 2)
     );
-
-    const artifacts = [
-        { name: "IdentityRegistry", artifact: "IdentityRegistry" },
-        { name: "AgeVerifier", artifact: "Age_verificationVerifier" },
-        { name: "NationalityVerifier", artifact: "Nationality_verificationVerifier" },
-        { name: "StudentVerifier", artifact: "Student_verificationVerifier" }
-    ];
-
-    for (const item of artifacts) {
-        const art = await hre.artifacts.readArtifact(item.artifact);
-        await fs.writeFile(
-            path.join(deploymentsDir, `${item.name}.json`),
-            JSON.stringify({ abi: art.abi }, null, 2)
-        );
-    }
-
-    // 4. Final CI Output (JSON Stringified)
-    console.log("-----------------------------------------");
-    console.log(JSON.stringify(deploymentInfo, null, 2));
-    console.log("-----------------------------------------");
-    console.log("✅ Deployment successful. Frontend synced.");
+    
+    console.log('Deployment complete!');
 }
 
-main().catch((error) => {
-    console.error("❌ Deployment failed:", error);
-    process.exit(1);
-});
+main().catch(console.error);

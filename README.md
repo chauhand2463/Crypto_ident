@@ -1,4 +1,4 @@
-   # � Crypto.Indent : Zero-Knowledge Identity Protocol
+   # � EXTREME EMERALD: Zero-Knowledge Identity Protocol
 
 **Secure. Private. Irrevocable.**  
 A production-grade ZK-Identity framework for privacy-preserving age-gating and nationality verification on the Polygon blockchain.
@@ -6,7 +6,7 @@ A production-grade ZK-Identity framework for privacy-preserving age-gating and n
 ---
 
 ## 🏛️ Project Vision
-Crypto.Indent solves the "Privacy Paradox" in digital verification. It allows users to prove they are over 18, have a specific nationality, or are students WITHOUT revealing their birth date, passport number, or university ID to the verifying application.
+Extreme Emerald solves the "Privacy Paradox" in digital verification. It allows users to prove they are over 18, have a specific nationality, or are students WITHOUT revealing their birth date, passport number, or university ID to the verifying application.
 
 ---
 
@@ -72,4 +72,17 @@ The smart contracts are deployed and verified on **Polygon Amoy**.
 5. **Security Check**:
    Once inside, the dashboard will automatically prompt you to switch to the correct "Hardhat Local" or "Polygon Amoy" network to ensure zero-data corruption.
 
-**Built By Dhairy Chauhan.** 🚀💎🦾🛡️
+---
+
+## 👨‍💻 Submission Checklist
+- [x] Contracts Verified on Polygonscan (Amoy)
+- [x] Video Demo showcasing ZK proof generation
+- [x] Documentation of on-chain revocation system
+- [x] No Mock Data verification audit passed
+- [x] Mobile-responsive Proving HUD V2 implemented
+- [x] Administrative Identity Revocation Dashboard
+- [x] Local Identity Vault with AES-256 encryption
+
+---
+
+**Built with <3 for the Hackathon Judges.** 🚀💎🦾🛡️
