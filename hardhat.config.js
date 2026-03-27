@@ -13,9 +13,17 @@ module.exports = {
       }
     }
   },
+  http: {
+    host: "0.0.0.0",
+    port: 8545
+  },
   networks: {
     hardhat: {
-      chainId: 31337
+      chainId: 31337,
+      http: {
+        host: "0.0.0.0",
+        port: 8545
+      }
     },
     localhost: {
       url: "http://127.0.0.1:8545"

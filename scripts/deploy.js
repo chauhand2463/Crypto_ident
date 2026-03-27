@@ -30,7 +30,7 @@ async function main() {
     console.log(`Deploying from: ${deployerAddress}`);
     
     // Get contract artifact
-    const artifactPath = path.join(__dirname, 'artifacts', 'contracts', 'IdentityRegistry.sol', 'IdentityRegistry.json');
+    const artifactPath = path.join('/app', 'artifacts', 'contracts', 'IdentityRegistry.sol', 'IdentityRegistry.json');
     const artifact = JSON.parse(fs.readFileSync(artifactPath, 'utf8'));
     
     // Deploy IdentityRegistry
@@ -57,7 +57,7 @@ async function main() {
     };
     
     fs.writeFileSync(
-        path.join(__dirname, 'frontend', 'src', 'contracts', 'deployment.json'),
+        path.join('/app', 'frontend', 'src', 'contracts', 'deployment.json'),
         JSON.stringify(deployment, null, 2)
     );
     

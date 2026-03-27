@@ -1,12 +1,10 @@
-version: '3.8'
-
 services:
   hardhat:
     image: node:20-alpine
     working_dir: /app
     volumes:
       - .:/app
-    command: sh -c "npm install && npx hardhat node --host 0.0.0.0"
+    command: sh -c "npm install && npx hardhat node"
     ports:
       - "8545:8545"
       - "8546:8546"
@@ -18,7 +16,7 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app
-    command: sh -c "cd backend && npm install && npm start"
+    command: sh -c "npm install && npm start"
     ports:
       - "5000:5000"
     depends_on:
@@ -33,7 +31,7 @@ services:
     working_dir: /app
     volumes:
       - ./frontend:/app
-    command: sh -c "cd frontend && npm install && npm run dev -- --host --port 80"
+    command: sh -c "npm install && npm run dev -- --host --port 80"
     ports:
       - "80:80"
       - "5173:5173"
@@ -41,5 +39,5 @@ services:
       - backend
     environment:
       - VITE_CHAIN_ID=31337
-      - VITE_IDENTITY_REGISTRY=0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9
+      - VITE_IDENTITY_REGISTRY=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
       - VITE_BACKEND_URL=http://localhost:5000
