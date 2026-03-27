@@ -351,7 +351,3 @@ npx hardhat verify --network amoy <CONTRACT_ADDRESS>
 ## License
 
 MIT License
-
----
-
-**Built with ❤️ for the Hackathon Judges** 🚀💎🦾🛡️

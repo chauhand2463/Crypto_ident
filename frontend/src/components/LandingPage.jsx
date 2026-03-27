@@ -144,28 +144,82 @@ const LandingPage = ({ onEnter, isConnected, address }) => {
                         without exposing your sensitive data. Powered by advanced ZK-SNARKs cryptography.
                     </p>
 
-                    {/* Central Eye Particle Graphic */}
-                    <div className="eye-container">
-                        <div className="eye-outer">
-                            <motion.div
-                                className="eye-particle-ring"
+                    {/* Enhanced Particle Shield Graphic */}
+                    <div className="particle-shield-container">
+                        <div className="shield-core">
+                            <motion.div 
+                                className="shield-ring ring-1"
                                 animate={{ rotate: 360 }}
+                                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                            />
+                            <motion.div 
+                                className="shield-ring ring-2"
+                                animate={{ rotate: -360 }}
                                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                             />
-                            <div className="eye-core">
-                                <div className="pupil" />
+                            <motion.div 
+                                className="shield-ring ring-3"
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                            />
+                            <div className="shield-center">
+                                <div className="shield-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                                    </svg>
+                                </div>
                             </div>
+                        </div>
+                        <div className="particle-orbit">
+                            {[...Array(8)].map((_, i) => (
+                                <motion.div 
+                                    key={i}
+                                    className="orbit-dot"
+                                    initial={{ opacity: 0.3 }}
+                                    animate={{ 
+                                        opacity: [0.3, 0.8, 0.3],
+                                        scale: [0.8, 1.2, 0.8]
+                                    }}
+                                    transition={{ 
+                                        duration: 2 + Math.random() * 2,
+                                        repeat: Infinity,
+                                        delay: i * 0.2
+                                    }}
+                                    style={{ 
+                                        '--angle': `${i * 45}deg`,
+                                        '--distance': '120px'
+                                    }}
+                                />
+                            ))}
                         </div>
                     </div>
 
                     <motion.button
                         className="mvc-cta"
                         onClick={onEnter}
-                        whileHover={{ scale: 1.05 }}
+                        whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(90, 90, 254, 0.4)" }}
+                        whileTap={{ scale: 0.98 }}
                     >
-                        {isConnected ? 'ACCESS DASHBOARD' : 'GET STARTED'}
+                        {isConnected ? 'ENTER DASHBOARD' : 'LAUNCH PROTOCOL'}
                         <MoveRight size={20} />
                     </motion.button>
+
+                    <div className="hero-stats">
+                        <div className="stat-item">
+                            <span className="stat-value">0</span>
+                            <span className="stat-label">GAS FEES</span>
+                        </div>
+                        <div className="stat-divider"></div>
+                        <div className="stat-item">
+                            <span className="stat-value">256</span>
+                            <span className="stat-label">BIT ENCRYPTION</span>
+                        </div>
+                        <div className="stat-divider"></div>
+                        <div className="stat-item">
+                            <span className="stat-value">ZK</span>
+                            <span className="stat-label">PROOFS</span>
+                        </div>
+                    </div>
                 </motion.div>
 
                 {/* Right Sidebar */}

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { LayoutDashboard, LogOut, ArrowRightLeft, Binary, BarChart3, ShieldAlert, HelpCircle } from 'lucide-react';
+import { LayoutDashboard, LogOut, ArrowRightLeft, Binary, BarChart3, ShieldAlert, HelpCircle, Shield } from 'lucide-react';
 
 const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
     const menuItems = [
@@ -18,22 +18,61 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 1 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
                 >
-                    <h1 style={{ fontSize: '1.5rem', letterSpacing: '-0.05em' }}>CRYPTOS<span style={{ color: 'var(--accent-primary)' }}>.</span>ID</h1>
-                    <div className="mono" style={{ fontSize: '0.5rem', color: 'var(--text-dim)', marginTop: '0.2rem' }}>MVC_CORE_PROTOCOL_v4.2</div>
+                    <div style={{ 
+                        width: '42px', 
+                        height: '42px', 
+                        background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)',
+                        borderRadius: '10px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 4px 15px rgba(90, 90, 254, 0.3)'
+                    }}>
+                        <Shield size={22} color="#000" />
+                    </div>
+                    <div>
+                        <h1 style={{ fontSize: '1.4rem', letterSpacing: '-0.05em', margin: 0 }}>ZK<span style={{ color: 'var(--accent-primary)' }}>.ID</span></h1>
+                        <div className="mono" style={{ fontSize: '0.5rem', color: 'var(--text-dim)', marginTop: '0.2rem' }}>CORE_PROTOCOL_v4.2</div>
+                    </div>
                 </motion.div>
             </div>
 
             <nav className="nav-list" style={{ flex: 1 }}>
-                {menuItems.map((item) => (
-                    <div
+                {menuItems.map((item, index) => (
+                    <motion.div
                         key={item.id}
                         className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
                         onClick={() => setActiveTab(item.id)}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        whileHover={{ x: 4 }}
                     >
-                        {item.icon}
+                        <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            color: activeTab === item.id ? 'var(--accent-primary)' : 'var(--text-dim)'
+                        }}>
+                            {item.icon}
+                        </div>
                         <span>{item.label}</span>
-                    </div>
+                        {activeTab === item.id && (
+                            <motion.div 
+                                layoutId="activeIndicator"
+                                style={{ 
+                                    position: 'absolute', 
+                                    right: 0, 
+                                    width: '3px', 
+                                    height: '60%', 
+                                    background: 'var(--accent-primary)',
+                                    borderRadius: '2px'
+                                }}
+                            />
+                        )}
+                    </motion.div>
                 ))}
             </nav>
 

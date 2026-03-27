@@ -24,6 +24,12 @@ const ProofInterface = ({ identity, address, chainStatus }) => {
     const [lastProofType, setLastProofType] = useState(null);
     const consoleRef = useRef(null);
 
+    const proofTypes = [
+        { type: 'AGE', label: 'AGE_VERIFICATION', icon: '🎂', desc: 'Prove you are over 18 without revealing your birth date' },
+        { type: 'NATIONALITY', label: 'NATIONALITY', icon: '🌍', desc: 'Verify your nationality without showing ID documents' },
+        { type: 'UNIVERSITY', label: 'STUDENT_STATUS', icon: '🎓', desc: 'Prove student enrollment without exposing student ID' }
+    ];
+
     // Check if identity is registered on-chain
     const isRegisteredOnChain = chainStatus?.registered === true;
 
@@ -376,27 +382,17 @@ const ProofInterface = ({ identity, address, chainStatus }) => {
 
             {/* Proof Actions */}
             <motion.div className="proof-grid" variants={containerVariants}>
-                <ProofAction
-                    label="AGE_VERIFICATION"
-                    desc="Prove you are over 18 without revealing your birth date"
-                    loading={isProcessing && lastProofType === 'AGE'}
-                    onClick={() => executeProofFlow('AGE', 'AGE')}
-                    status={status}
-                />
-                <ProofAction
-                    label="NATIONALITY"
-                    desc="Verify your nationality without showing ID documents"
-                    loading={isProcessing && lastProofType === 'NATIONALITY'}
-                    onClick={() => executeProofFlow('NATIONALITY', 'NAT')}
-                    status={status}
-                />
-                <ProofAction
-                    label="STUDENT_STATUS"
-                    desc="Prove student enrollment without exposing student ID"
-                    loading={isProcessing && lastProofType === 'UNIVERSITY'}
-                    onClick={() => executeProofFlow('UNIVERSITY', 'STU')}
-                    status={status}
-                />
+                {proofTypes.map((proof) => (
+                    <ProofAction
+                        key={proof.type}
+                        label={proof.label}
+                        icon={proof.icon}
+                        desc={proof.desc}
+                        loading={isProcessing && lastProofType === proof.type}
+                        onClick={() => executeProofFlow(proof.type, proof.label)}
+                        status={status}
+                    />
+                ))}
             </motion.div>
 
             {/* Console Logs */}
@@ -437,33 +433,56 @@ const ProofInterface = ({ identity, address, chainStatus }) => {
     );
 };
 
-const ProofAction = ({ label, desc, loading, onClick, status }) => {
+const ProofAction = ({ label, icon, desc, loading, onClick, status }) => {
     const isDisabled = status === STAGES.PROVING || status === STAGES.SUBMITTING;
 
     return (
         <motion.div
             style={{
-                background: 'rgba(255, 255, 255, 0.02)',
+                background: isDisabled 
+                    ? 'linear-gradient(135deg, rgba(90, 90, 254, 0.02) 0%, rgba(0, 0, 0, 0.2) 100%)'
+                    : 'linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(90, 90, 254, 0.02) 100%)',
                 border: '1px solid var(--border-dim)',
-                padding: '1.25rem',
+                padding: '1.5rem',
                 display: 'flex',
                 flexDirection: 'column',
-                borderRadius: '12px',
-                transition: 'all 0.3s ease'
+                borderRadius: '16px',
+                transition: 'all 0.3s ease',
+                position: 'relative',
+                overflow: 'hidden'
             }}
-            whileHover={{ borderColor: 'var(--accent-primary)', transform: 'translateY(-2px)' }}
+            whileHover={{ borderColor: 'var(--accent-primary)', transform: 'translateY(-4px)', boxShadow: '0 10px 30px rgba(90, 90, 254, 0.15)' }}
         >
-            <div className="flex-between" style={{ marginBottom: '0.75rem' }}>
-                <h3 style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', margin: 0, fontFamily: 'var(--font-mono)' }}>
-                    {label}
-                </h3>
+            <div style={{ 
+                position: 'absolute', 
+                top: 0, 
+                left: 0, 
+                right: 0, 
+                height: '3px', 
+                background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-secondary))',
+                opacity: isDisabled ? 0.3 : 1
+            }} />
+            
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <div style={{ 
+                    width: '48px', 
+                    height: '48px', 
+                    background: 'rgba(90, 90, 254, 0.1)', 
+                    borderRadius: '12px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    fontSize: '1.5rem'
+                }}>
+                    {icon}
+                </div>
                 {loading && (
                     <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                         style={{
-                            width: '12px',
-                            height: '12px',
+                            width: '16px',
+                            height: '16px',
                             border: '2px solid var(--accent-primary)',
                             borderTopColor: 'transparent',
                             borderRadius: '50%'
@@ -471,27 +490,33 @@ const ProofAction = ({ label, desc, loading, onClick, status }) => {
                     />
                 )}
             </div>
-            <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', marginBottom: '1rem', lineHeight: '1.5', flex: 1 }}>
+            <h3 style={{ fontSize: '0.85rem', color: 'var(--accent-primary)', margin: '0 0 0.5rem 0', fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>
+                {label}
+            </h3>
+            <p style={{ color: 'var(--text-dim)', fontSize: '0.7rem', marginBottom: '1.5rem', lineHeight: '1.5', flex: 1 }}>
                 {desc}
             </p>
             <button 
                 onClick={onClick} 
                 disabled={isDisabled}
                 style={{
-                    padding: '0.6rem 1rem',
-                    background: isDisabled ? 'var(--text-dim)' : 'var(--accent-primary)',
+                    padding: '0.75rem 1rem',
+                    background: isDisabled 
+                        ? 'rgba(100, 100, 100, 0.3)' 
+                        : 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)',
                     color: '#000',
                     border: 'none',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     fontSize: '0.7rem',
-                    fontWeight: '600',
+                    fontWeight: '700',
                     cursor: isDisabled ? 'not-allowed' : 'pointer',
                     fontFamily: 'var(--font-mono)',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.05em'
+                    letterSpacing: '0.1em',
+                    boxShadow: isDisabled ? 'none' : '0 4px 15px rgba(90, 90, 254, 0.3)'
                 }}
             >
-                {loading ? 'PROCESSING...' : 'GENERATE_PROOF'}
+                {loading ? 'GENERATING...' : 'GENERATE PROOF'}
             </button>
         </motion.div>
     );

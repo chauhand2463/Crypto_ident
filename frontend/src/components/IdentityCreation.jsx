@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import { saveIdentity, generateSalt } from '../utils/identityStorage';
 import { calculateIdentityHash } from '../utils/zkUtils';
 import { registerIdentityOnChain } from '../services/identity.service';
+import { Shield, User, GraduationCap, Globe, Lock } from 'lucide-react';
 
 const IdentityCreation = ({ onIdentityCreated }) => {
     const [dob, setDob] = useState('');
@@ -99,7 +100,31 @@ const IdentityCreation = ({ onIdentityCreated }) => {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
+            style={{
+                padding: '1.5rem',
+                background: 'linear-gradient(135deg, rgba(90, 90, 254, 0.05) 0%, rgba(168, 85, 247, 0.02) 100%)',
+                borderRadius: '12px',
+                border: '1px solid var(--border-dim)'
+            }}
         >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border-dim)' }}>
+                <div style={{ 
+                    width: '40px', 
+                    height: '40px', 
+                    background: 'rgba(90, 90, 254, 0.1)', 
+                    borderRadius: '8px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center' 
+                }}>
+                    <Shield size={20} color="var(--accent-primary)" />
+                </div>
+                <div>
+                    <h3 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-main)', fontFamily: 'var(--font-display)' }}>ENCRYPTED IDENTITY</h3>
+                    <p style={{ margin: 0, fontSize: '0.65rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>LOCAL_VAULT_ONLY // NO ETH REQUIRED</p>
+                </div>
+            </div>
+
             {error && (
                 <motion.div 
                     initial={{ opacity: 0, y: -10 }}
@@ -119,22 +144,30 @@ const IdentityCreation = ({ onIdentityCreated }) => {
             )}
 
             <motion.div className="input-group" variants={itemVariants}>
-                <span className="input-label">DATE_OF_BIRTH</span>
+                <span className="input-label"><User size={12} style={{ marginRight: 4 }} /> DATE_OF_BIRTH</span>
                 <input
                     type="date"
                     className="input-field"
                     value={dob}
                     onChange={(e) => setDob(e.target.value)}
                     required
+                    style={{ 
+                        background: 'linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(90, 90, 254, 0.02) 100%)',
+                        borderColor: 'var(--border-dim)'
+                    }}
                 />
             </motion.div>
 
             <motion.div className="input-group" variants={itemVariants}>
-                <span className="input-label">NATIONALITY</span>
+                <span className="input-label"><Globe size={12} style={{ marginRight: 4 }} /> NATIONALITY</span>
                 <select
                     className="input-field"
                     value={nationality}
                     onChange={(e) => setNationality(e.target.value)}
+                    style={{ 
+                        background: 'linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(90, 90, 254, 0.02) 100%)',
+                        borderColor: 'var(--border-dim)'
+                    }}
                 >
                     <option value="1">United States</option>
                     <option value="2">United Kingdom</option>
