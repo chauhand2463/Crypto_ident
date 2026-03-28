@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { MoveRight, Plus, Twitter, Github, MessageSquare, Shield, Cpu, Zap, Database, Globe, Fingerprint, Lock, UserCheck } from 'lucide-react';
+import { MoveRight, Plus, Twitter, Github, MessageSquare, Shield, Cpu, Zap, Database, Globe, Fingerprint, Lock, UserCheck, ArrowRight, CheckCircle2, Hexagon, Layers, Network, Key, Eye, Sparkles, Star, ChevronDown } from 'lucide-react';
 
 const MatrixLine = ({ text }) => {
     const [displayed, setDisplayed] = useState('');
@@ -16,6 +16,48 @@ const MatrixLine = ({ text }) => {
 
     return <div className="matrix-line">{displayed}<span className="cursor-blink">_</span></div>;
 };
+
+const FloatingParticle = ({ delay }) => (
+    <motion.div
+        className="floating-particle"
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ 
+            opacity: [0, 1, 0],
+            y: [-20, -100],
+            x: [0, Math.random() * 50 - 25]
+        }}
+        transition={{
+            duration: 3 + Math.random() * 2,
+            repeat: Infinity,
+            delay: delay,
+            ease: "easeOut"
+        }}
+    />
+);
+
+const GradientOrb = ({ size, colors, position, delay }) => (
+    <motion.div
+        className="gradient-orb"
+        style={{
+            width: size,
+            height: size,
+            background: `radial-gradient(circle, ${colors[0]} 0%, ${colors[1]} 50%, transparent 70%)`,
+            position: 'absolute',
+            ...position,
+            filter: 'blur(40px)',
+        }}
+        animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{
+            duration: 4 + Math.random() * 2,
+            repeat: Infinity,
+            delay: delay,
+            ease: "easeInOut"
+        }}
+    />
+);
 
 const LandingPage = ({ onEnter, isConnected, address }) => {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -60,6 +102,13 @@ const LandingPage = ({ onEnter, isConnected, address }) => {
         hidden: { opacity: 0, x: 50 },
         visible: { opacity: 1, x: 0, transition: { duration: 1, ease: "easeOut" } }
     };
+
+    const benefits = [
+        { icon: <Shield size={18} />, text: 'Privacy Preserved' },
+        { icon: <Key size={18} />, text: 'Self-Sovereign' },
+        { icon: <Zap size={18} />, text: 'Instant Verification' },
+        { icon: <Layers size={18} />, text: 'Multi-Chain Ready' }
+    ];
 
     return (
         <div className="mvc-landing">
@@ -131,12 +180,13 @@ const LandingPage = ({ onEnter, isConnected, address }) => {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                     >
+                        <Sparkles size={14} />
                         ZERO-KNOWLEDGE IDENTITY
                     </motion.div>
 
                     <h1 className="mvc-title">
                         PROVE WHO YOU ARE <br />
-                        <span className="highlight-purple">WITHOUT REVEALING</span>
+                        <span className="highlight-gradient">WITHOUT REVEALING</span>
                     </h1>
 
                     <p className="hero-subtitle">
@@ -146,6 +196,9 @@ const LandingPage = ({ onEnter, isConnected, address }) => {
 
                     {/* Enhanced Particle Shield Graphic */}
                     <div className="particle-shield-container">
+                        <GradientOrb size={300} colors={['rgba(90, 90, 254, 0.4)', 'rgba(168, 85, 247, 0.1)']} position={{ top: -100, left: -50 }} delay={0} />
+                        <GradientOrb size={200} colors={['rgba(0, 255, 153, 0.3)', 'rgba(0, 255, 153, 0.05)']} position={{ bottom: -50, right: 0 }} delay={1} />
+                        
                         <div className="shield-core">
                             <motion.div 
                                 className="shield-ring ring-1"
@@ -171,7 +224,7 @@ const LandingPage = ({ onEnter, isConnected, address }) => {
                             </div>
                         </div>
                         <div className="particle-orbit">
-                            {[...Array(8)].map((_, i) => (
+                            {[...Array(12)].map((_, i) => (
                                 <motion.div 
                                     key={i}
                                     className="orbit-dot"
@@ -183,15 +236,31 @@ const LandingPage = ({ onEnter, isConnected, address }) => {
                                     transition={{ 
                                         duration: 2 + Math.random() * 2,
                                         repeat: Infinity,
-                                        delay: i * 0.2
+                                        delay: i * 0.15
                                     }}
                                     style={{ 
-                                        '--angle': `${i * 45}deg`,
-                                        '--distance': '120px'
+                                        '--angle': `${i * 30}deg`,
+                                        '--distance': `${100 + (i % 3) * 30}px`
                                     }}
                                 />
                             ))}
                         </div>
+                        <div className="shield-grid-overlay" />
+                    </div>
+
+                    <div className="hero-benefits">
+                        {benefits.map((benefit, i) => (
+                            <motion.div 
+                                key={i}
+                                className="benefit-item"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5 + i * 0.1 }}
+                            >
+                                {benefit.icon}
+                                <span>{benefit.text}</span>
+                            </motion.div>
+                        ))}
                     </div>
 
                     <motion.button
@@ -201,12 +270,12 @@ const LandingPage = ({ onEnter, isConnected, address }) => {
                         whileTap={{ scale: 0.98 }}
                     >
                         {isConnected ? 'ENTER DASHBOARD' : 'LAUNCH PROTOCOL'}
-                        <MoveRight size={20} />
+                        <ArrowRight size={20} />
                     </motion.button>
 
                     <div className="hero-stats">
                         <div className="stat-item">
-                            <span className="stat-value">0</span>
+                            <span className="stat-value">&lt;$0.01</span>
                             <span className="stat-label">GAS FEES</span>
                         </div>
                         <div className="stat-divider"></div>
@@ -220,6 +289,14 @@ const LandingPage = ({ onEnter, isConnected, address }) => {
                             <span className="stat-label">PROOFS</span>
                         </div>
                     </div>
+
+                    <motion.div 
+                        className="scroll-indicator"
+                        animate={{ y: [0, 10, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                    >
+                        <ChevronDown size={24} />
+                    </motion.div>
                 </motion.div>
 
                 {/* Right Sidebar */}
@@ -255,10 +332,10 @@ const LandingPage = ({ onEnter, isConnected, address }) => {
 
                     <div className="tech-core-grid">
                         {[
-                            { title: 'PRIVACY_BY_DESIGN', desc: 'Your data never leaves your device. We use AES-256 encryption and local proof generation.', icon: <Shield /> },
-                            { title: 'SELECTIVE_DISCLOSURE', desc: 'Share only what you need. Prove "over 18" without showing your birth date.', icon: <Fingerprint /> },
-                            { title: 'NON_CUSTODIAL', desc: 'You own your identity. No centralized database. No data breaches.', icon: <Database /> },
-                            { title: 'GAS_OPTIMIZED', desc: 'Built on Polygon Amoy for minimal fees. Groth16 verification costs less than $0.01.', icon: <Zap /> }
+                            { title: 'PRIVACY_BY_DESIGN', desc: 'Your data never leaves your device. We use AES-256 encryption and local proof generation.', icon: <Shield />, color: '#5a5afe' },
+                            { title: 'SELECTIVE_DISCLOSURE', desc: 'Share only what you need. Prove "over 18" without showing your birth date.', icon: <Fingerprint />, color: '#a855f7' },
+                            { title: 'NON_CUSTODIAL', desc: 'You own your identity. No centralized database. No data breaches.', icon: <Database />, color: '#00ff99' },
+                            { title: 'GAS_OPTIMIZED', desc: 'Built on Polygon Amoy for minimal fees. Groth16 verification costs less than $0.01.', icon: <Zap />, color: '#ff3366' }
                         ].map((tech, i) => (
                             <motion.div
                                 key={i}
@@ -272,9 +349,12 @@ const LandingPage = ({ onEnter, isConnected, address }) => {
                                     ease: [0.16, 1, 0.3, 1]
                                 }}
                                 whileHover={{ y: -10 }}
+                                style={{ '--tech-color': tech.color }}
                             >
-                                <div className="tech-icon-large">{tech.icon}</div>
-                                <h3 className="mono" style={{ color: 'var(--accent-primary)', marginBottom: '1rem' }}>{tech.title}</h3>
+                                <div className="tech-card-bg" style={{ background: `radial-gradient(circle at 80% 20%, ${tech.color}15 0%, transparent 50%)` }} />
+                                <div className="tech-icon-large" style={{ color: tech.color, opacity: 0.15 }}>{tech.icon}</div>
+                                <div className="tech-card-accent" style={{ background: tech.color }} />
+                                <h3 className="mono" style={{ color: tech.color, marginBottom: '1rem' }}>{tech.title}</h3>
                                 <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', lineHeight: '1.6' }}>{tech.desc}</p>
                                 <div className="card-glow-fx" />
                             </motion.div>
@@ -315,9 +395,9 @@ const LandingPage = ({ onEnter, isConnected, address }) => {
 
                     <div className="steps-container">
                         {[
-                            { num: '01', title: 'CREATE_VAULT', desc: 'Generate your encrypted identity vault locally. Your data is encrypted with AES-256-GCM.' },
-                            { num: '02', title: 'GENERATE_PROOF', desc: 'Create a ZK proof that verifies your claim without revealing underlying data.' },
-                            { num: '03', title: 'VERIFY_ONCHAIN', desc: 'Submit the proof to the blockchain. Verifiers check validity without seeing your data.' }
+                            { num: '01', title: 'CREATE_VAULT', desc: 'Generate your encrypted identity vault locally. Your data is encrypted with AES-256-GCM.', icon: <Key size={32} /> },
+                            { num: '02', title: 'GENERATE_PROOF', desc: 'Create a ZK proof that verifies your claim without revealing underlying data.', icon: <Hexagon size={32} /> },
+                            { num: '03', title: 'VERIFY_ONCHAIN', desc: 'Submit the proof to the blockchain. Verifiers check validity without seeing your data.', icon: <Network size={32} /> }
                         ].map((step, i) => (
                             <motion.div
                                 key={i}
@@ -327,6 +407,14 @@ const LandingPage = ({ onEnter, isConnected, address }) => {
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.2 }}
                             >
+                                <div className="step-card-inner">
+                                    <div className="step-icon-wrapper">
+                                        {step.icon}
+                                    </div>
+                                    <div className="step-connector">
+                                        {i < 2 && <div className="connector-line" />}
+                                    </div>
+                                </div>
                                 <div className="step-num">{step.num}</div>
                                 <h3 className="mono" style={{ color: 'var(--accent-primary)', marginBottom: '0.5rem' }}>{step.title}</h3>
                                 <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', lineHeight: '1.5' }}>{step.desc}</p>
